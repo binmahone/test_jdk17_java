@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ScalaCompilerConfiguration">
+    <profile name="Maven 1" modules="test_jdk17_java">
+      <option name="deprecationWarnings" value="true" />
+      <option name="uncheckedWarnings" value="true" />
+      <option name="featureWarnings" value="true" />
+      <option name="explainTypeErrors" value="true" />
+      <parameters>
+        <parameter value="-Xlint:missing-interpolator" />
+        <parameter value="-Ywarn-unused:imports,locals,patvars,privates" />
+        <parameter value="-Yno-adapted-args" />
+        <parameter value="-Xfatal-warnings" />
+        <parameter value="-Wconf:cat=lint-adapted-args:e" />
+      </parameters>
+    </profile>
+  </component>
+</project>

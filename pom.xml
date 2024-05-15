@@ -1,0 +1,633 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>test_jdk17_java</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+<!--        <maven.compiler.source>17</maven.compiler.source>-->
+<!--        <maven.compiler.target>17</maven.compiler.target>-->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+
+
+
+        <rapids.module>.</rapids.module>
+<!--        <rapids.secondaryCacheDir>${spark.rapids.project.basedir}/target/${spark.version.classifier}/.sbt/1.0/zinc/org.scala-sbt</rapids.secondaryCacheDir>-->
+        <allowConventionalDistJar>false</allowConventionalDistJar>
+        <buildver>311</buildver>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <java.major.version>8</java.major.version>
+        <spark.version>${spark311.version}</spark.version>
+        <spark.test.version>${spark.version}</spark.test.version>
+        <parquet.hadoop.version>1.10.1</parquet.hadoop.version>
+        <spark.version.classifier>spark${buildver}</spark.version.classifier>
+        <cuda.version>cuda11</cuda.version>
+        <jni.classifier>${cuda.version}</jni.classifier>
+        <spark-rapids-jni.version>24.06.0-SNAPSHOT</spark-rapids-jni.version>
+        <spark-rapids-private.version>24.06.0-SNAPSHOT</spark-rapids-private.version>
+        <scala.binary.version>2.12</scala.binary.version>
+        <alluxio.client.version>2.8.0</alluxio.client.version>
+        <scala.recompileMode>incremental</scala.recompileMode>
+        <scala.version>2.12.15</scala.version>
+        <!--
+        -processing
+        to suppress unactionable "No processor claimed any of these annotations"
+        from various dependencies. Example @UDFType
+        https://github.com/openjdk/jdk17/blob/4afbcaf55383ec2f5da53282a1547bac3d099e9d/src/jdk.compiler/share/classes/com/sun/tools/javac/resources/compiler.properties#L1993-L1994
+        -->
+        <scala.javac.args>-Xlint:all,-serial,-path,-try,-processing|-Werror</scala.javac.args>
+        <ucx.baseVersion>1.16.0</ucx.baseVersion>
+        <!-- ucx x86 is just the base version (implied), arm is specified under arm64 profile. -->
+        <ucx.version>${ucx.baseVersion}</ucx.version>
+        <rapids.compressed.artifact>true</rapids.compressed.artifact>
+        <rapids.default.jar.excludePattern/>
+        <rapids.default.jar.phase>package</rapids.default.jar.phase>
+        <!--
+             If the shade package changes we need to also update jenkins/spark-premerge-build.sh
+             so code coverage does not include the shaded classes.
+        -->
+        <rapids.shade.package>${spark.version.classifier}.com.nvidia.shaded.spark</rapids.shade.package>
+        <rapids.shim.jar.phase>none</rapids.shim.jar.phase>
+        <rapids.shim.jar.test.phase>package</rapids.shim.jar.test.phase>
+        <test.include.tags/>
+        <rapids.shuffle.manager.override>true</rapids.shuffle.manager.override>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.sourceEncoding>UTF-8</project.reporting.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <pytest.TEST_TAGS>not qarun</pytest.TEST_TAGS>
+        <pytest.TEST_PARALLEL/>
+        <pytest.TEST_TYPE>developer</pytest.TEST_TYPE>
+        <rat.consoleOutput>false</rat.consoleOutput>
+        <!--
+         If you update a dependency version so it is no longer a SNAPSHOT
+         please update the snapshot-shims profile as well so it is accurate -->
+        <spark311.version>3.1.1</spark311.version>
+        <spark312.version>3.1.2</spark312.version>
+        <spark313.version>3.1.3</spark313.version>
+        <spark320.version>3.2.0</spark320.version>
+        <spark321.version>3.2.1</spark321.version>
+        <spark321cdh.version>3.2.1.3.2.7171000.0-3</spark321cdh.version>
+        <spark322.version>3.2.2</spark322.version>
+        <spark323.version>3.2.3</spark323.version>
+        <spark324.version>3.2.4</spark324.version>
+        <spark330.version>3.3.0</spark330.version>
+        <spark331.version>3.3.1</spark331.version>
+        <spark332.version>3.3.2</spark332.version>
+        <spark333.version>3.3.3</spark333.version>
+        <spark334.version>3.3.4</spark334.version>
+        <spark340.version>3.4.0</spark340.version>
+        <spark341.version>3.4.1</spark341.version>
+        <spark342.version>3.4.2</spark342.version>
+        <spark343.version>3.4.3</spark343.version>
+        <spark330cdh.version>3.3.0.3.3.7180.0-274</spark330cdh.version>
+        <spark332cdh.version>3.3.2.3.3.7190.0-91</spark332cdh.version>
+        <spark330db.version>3.3.0-databricks</spark330db.version>
+        <spark332db.version>3.3.2-databricks</spark332db.version>
+        <spark341db.version>3.4.1-databricks</spark341db.version>
+        <spark350.version>3.5.0</spark350.version>
+        <spark351.version>3.5.1</spark351.version>
+        <mockito.version>3.12.4</mockito.version>
+        <scala.plugin.version>4.3.0</scala.plugin.version>
+        <maven.install.plugin.version>3.1.1</maven.install.plugin.version>
+        <maven.jar.plugin.version>3.3.0</maven.jar.plugin.version>
+        <scalatest-maven-plugin.version>2.0.2</scalatest-maven-plugin.version>
+        <guava.cdh.version>30.0-jre</guava.cdh.version>
+        <arrow.cdh.version>2.0.0</arrow.cdh.version>
+        <slf4j.version>1.7.30</slf4j.version>
+        <flatbuffers.java.version>1.11.0</flatbuffers.java.version>
+        <hadoop.client.version>3.3.1</hadoop.client.version>
+        <iceberg.version>0.13.2</iceberg.version>
+        <scala.local-lib.path>org/scala-lang/scala-library/${scala.version}/scala-library-${scala.version}.jar</scala.local-lib.path>
+        <target.classifier>${spark.version.classifier}</target.classifier>
+        <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
+        <maven.scaladoc.skip>false</maven.scaladoc.skip>
+        <maven.scalastyle.skip>false</maven.scalastyle.skip>
+        <dist.jar.compress>true</dist.jar.compress>
+        <spark330.iceberg.version>0.14.1</spark330.iceberg.version>
+        <!--
+            If true, disables verification that all Shims be built as of one and the same git
+            commit hash. Do not use for CI!
+
+            It is intended only for local builds of the dist module when combining locally-built shims
+            with the ones deployed to a remote Maven repo
+        -->
+        <ignore.shim.revisions.check>false</ignore.shim.revisions.check>
+
+        <spark.shim.dest>${project.basedir}/target/${spark.version.classifier}/generated/src</spark.shim.dest>
+        <noSnapshot.buildvers>
+            311,
+            312,
+            313,
+            320,
+            321,
+            321cdh,
+            322,
+            323,
+            324,
+            330,
+            331,
+            332,
+            333,
+            334,
+            330cdh,
+            332cdh,
+            340,
+            341,
+            342,
+            343,
+            350,
+            351
+        </noSnapshot.buildvers>
+        <snapshot.buildvers>
+        </snapshot.buildvers>
+        <databricks.buildvers>
+            330db,
+            332db,
+            341db
+        </databricks.buildvers>
+        <!--
+          Build and run unit tests on one specific version for each sub-version (e.g. 311, 320, 330)
+          Base shim version (311 currently) should be covered in default mvn verify command of premerge script,
+          so base shim version is removed from the premergeUT list.
+          Separate the versions to two parts (premergeUT1, premergeUT2) for balancing the duration
+        -->
+        <premergeUT1.buildvers>
+            320
+        </premergeUT1.buildvers>
+        <premergeUT2.buildvers>
+            330,
+            340
+        </premergeUT2.buildvers>
+        <premergeUTF8.buildvers>
+            320
+        </premergeUTF8.buildvers>
+        <premergeScala213.buildvers>
+            333,
+            340
+        </premergeScala213.buildvers>
+        <jdk11.buildvers>
+            312,
+            321,
+            331,
+            340
+        </jdk11.buildvers>
+        <jdk17.buildvers>
+            330
+        </jdk17.buildvers>
+        <all.buildvers>
+            ${noSnapshot.buildvers},
+            ${snapshot.buildvers},
+            ${databricks.buildvers},
+            <!-- 400 is not buildable yet. We are only declaring it as a known shim here -->
+            400
+        </all.buildvers>
+        <noSnapshotScala213.buildvers>
+            330,
+            331,
+            332,
+            333,
+            334,
+            340,
+            341,
+            342,
+            350,
+            351
+        </noSnapshotScala213.buildvers>
+        <snapshotScala213.buildvers>
+        </snapshotScala213.buildvers>
+        <allScala213.buildvers>
+            ${noSnapshotScala213.buildvers}
+            ${snapshotScala213.buildvers}
+        </allScala213.buildvers>
+        <shimplify.shims>${all.buildvers}</shimplify.shims>
+        <cpd.sourceType>main</cpd.sourceType>
+        <!-- SPARK-36796 for JDK-17 test-->
+        <extraJavaTestArgs>
+            -XX:+IgnoreUnrecognizedVMOptions
+            --add-opens=java.base/java.lang=ALL-UNNAMED
+            --add-opens=java.base/java.lang.invoke=ALL-UNNAMED
+            --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+            --add-opens=java.base/java.io=ALL-UNNAMED
+            --add-opens=java.base/java.net=ALL-UNNAMED
+            --add-opens=java.base/java.nio=ALL-UNNAMED
+            --add-opens=java.base/java.util=ALL-UNNAMED
+            --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+            --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED
+            --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
+            --add-opens=java.base/sun.nio.cs=ALL-UNNAMED
+            --add-opens=java.base/sun.security.action=ALL-UNNAMED
+            --add-opens=java.base/sun.util.calendar=ALL-UNNAMED
+            -Djdk.reflect.useDirectMethodHandle=false
+        </extraJavaTestArgs>
+        <cloudera.repo.enabled>false</cloudera.repo.enabled>
+        <cloudera.repo.url>https://repository.cloudera.com/artifactory/cloudera-repos</cloudera.repo.url>
+        <cloudera.repo.url.fallback>https://repository.cloudera.com/repository/cloudera-repos</cloudera.repo.url.fallback>
+        <bloop.installPhase>install</bloop.installPhase>
+        <build.info.path>${project.build.outputDirectory}/rapids4spark-version-info.properties</build.info.path>
+        <nonfail.errors.quiet>false</nonfail.errors.quiet>
+    </properties>
+
+
+
+    <build>
+        <directory>${project.basedir}/target/${target.classifier}</directory>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-shade-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.12.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.11.0</version>
+                    <executions>
+                        <execution>
+                            <id>default-compile</id>
+                            <phase>none</phase>
+                        </execution>
+                        <execution>
+                            <id>default-testCompile</id>
+                            <phase>none</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>scala-maven-plugin</artifactId>
+                    <version>${scala.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>eclipse-add-source</id>
+                            <goals>
+                                <goal>add-source</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>scala-compile-first</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>compile</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>scala-test-compile-first</id>
+                            <phase>process-test-resources</phase>
+                            <goals>
+                                <goal>testCompile</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>attach-scaladocs</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>doc-jar</goal>
+                            </goals>
+                            <configuration>
+                                <args>
+                                    <arg>-doc-external-doc:${java.home}/lib/rt.jar#https://docs.oracle.com/javase/${java.major.version}/docs/api/index.html</arg>
+                                    <arg>-doc-external-doc:${settings.localRepository}/${scala.local-lib.path}#https://scala-lang.org/api/${scala.version}/</arg>
+                                    <arg>-doc-external-doc:${settings.localRepository}/org/apache/spark/spark-sql_${scala.binary.version}/${spark.version}/spark-sql_${scala.binary.version}-${spark.version}.jar#https://spark.apache.org/docs/${spark.version}/api/scala/index.html</arg>
+                                </args>
+                                <skip>${maven.scaladoc.skip}</skip>
+                            </configuration>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <scalaVersion>${scala.version}</scalaVersion>
+                        <checkMultipleScalaVersions>true</checkMultipleScalaVersions>
+                        <failOnMultipleScalaVersions>true</failOnMultipleScalaVersions>
+                        <recompileMode>${scala.recompileMode}</recompileMode>
+                        <args>
+                            <arg>-unchecked</arg>
+                            <arg>-deprecation</arg>
+                            <arg>-feature</arg>
+                            <arg>-explaintypes</arg>
+                            <arg>-Xlint:missing-interpolator</arg>
+                            <!-- #if scala-2.12 -->
+                            <arg>-Ywarn-unused:imports,locals,patvars,privates</arg>
+                            <arg>-Yno-adapted-args</arg>
+                            <arg>-Xfatal-warnings</arg>
+                            <!-- #endif scala-2.12 -->
+                            <arg>-Wconf:cat=lint-adapted-args:e</arg>
+                            <!-- #if scala-2.13 --><!--
+                            <arg>-Xsource:2.13</arg>
+                            <arg>-Ywarn-unused:locals,patvars,privates</arg>
+                            <arg>-Wconf:cat=deprecation:wv,any:e</arg>
+                            <arg>-Wconf:cat=scaladoc:wv</arg>
+                            <arg>-Wconf:cat=lint-multiarg-infix:wv</arg>
+                            <arg>-Wconf:cat=other-nullary-override:wv</arg>
+                            <arg>-Wconf:msg=^(?=.*?method|value|type|object|trait|inheritance)(?=.*?deprecated)(?=.*?since 2.13).+$:s</arg>
+                            <arg>-Wconf:msg=^(?=.*?Widening conversion from)(?=.*?is deprecated because it loses precision).+$:s</arg>
+                            <arg>-Wconf:msg=Auto-application to \`\(\)\` is deprecated:s</arg>
+                            <arg>-Wconf:msg=method with a single empty parameter list overrides method without any parameter list:s</arg>
+                            <arg>-Wconf:msg=method without a parameter list overrides a method with a single empty one:s</arg>
+                            <arg>-Wconf:cat=deprecation&amp;msg=procedure syntax is deprecated:e</arg>
+                            <arg>-Wconf:cat=unchecked&amp;msg=outer reference:s</arg>
+                            <arg>-Wconf:cat=unchecked&amp;msg=eliminated by erasure:s</arg>
+                            <arg>-Wconf:msg=^(?=.*?a value of type)(?=.*?cannot also be).+$:s</arg>
+                            --><!-- #endif scala-2.13 -->
+                        </args>
+                        <jvmArgs>
+                            <jvmArg>-Xms1024m</jvmArg>
+                            <jvmArg>-Xmx1024m</jvmArg>
+                        </jvmArgs>
+                        <addJavacArgs>${scala.javac.args}</addJavacArgs>
+                        <secondaryCacheDir>${rapids.secondaryCacheDir}</secondaryCacheDir>
+                        <!-- #if scala-2.13 --><!--
+                        <compilerPlugins combine.self="override">
+                        </compilerPlugins>
+                        --><!-- #endif scala-2.13 -->
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.scalatest</groupId>
+                    <artifactId>scalatest-maven-plugin</artifactId>
+                    <version>${scalatest-maven-plugin.version}</version>
+                    <configuration>
+                        <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                        <junitxml>.</junitxml>
+                        <filereports>scala-test-output.txt</filereports>
+                        <argLine>${argLine} -ea -Xmx4g -Xss4m ${extraJavaTestArgs}</argLine>
+                        <stderr/>
+                        <systemProperties>
+                            <rapids.shuffle.manager.override>${rapids.shuffle.manager.override}</rapids.shuffle.manager.override>
+                            <ai.rapids.refcount.debug>true</ai.rapids.refcount.debug>
+                            <java.awt.headless>true</java.awt.headless>
+                            <java.io.tmpdir>${project.build.directory}/tmp</java.io.tmpdir>
+                            <spark.ui.enabled>false</spark.ui.enabled>
+                            <spark.ui.showConsoleProgress>false</spark.ui.showConsoleProgress>
+                            <spark.unsafe.exceptionOnMemoryLeak>true</spark.unsafe.exceptionOnMemoryLeak>
+                        </systemProperties>
+                        <tagsToInclude>${test.include.tags}</tagsToInclude>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>test</id>
+                            <goals>
+                                <goal>test</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.rat</groupId>
+                    <artifactId>apache-rat-plugin</artifactId>
+                    <version>0.13</version>
+                    <configuration>
+                        <consoleOutput>${rat.consoleOutput}</consoleOutput>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.8</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven.jar.plugin.version}</version>
+                    <!--
+                        Packaging type jar requires an output artifact without a classifier a.k.a.
+                        main artifact. Modules whose real "main" output artifact is a shim jar
+                        should comply by outputing a main jar without the class bytecode. In the pom
+                        of such a module set
+                          exludePattern to **/*
+                          rapids.shim.jar.phase to package to attach the shim artifact
+
+                       Modules feededing into dist need not be compressed.
+                        Set rapids.compressed.artifact to false
+                    -->
+                    <executions>
+                        <execution>
+                            <id>default-jar</id>
+                            <goals><goal>jar</goal></goals>
+                            <phase>${rapids.default.jar.phase}</phase>
+                            <configuration>
+                                <excludes>
+                                    <exclude>${rapids.default.jar.excludePattern}</exclude>
+                                </excludes>
+                                <archive>
+                                    <compress>${rapids.compressed.artifact}</compress>
+                                </archive>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>create-${spark.version.classifier}-jar</id>
+                            <goals><goal>jar</goal></goals>
+                            <phase>${rapids.shim.jar.phase}</phase>
+                            <configuration>
+                                <classifier>${spark.version.classifier}</classifier>
+                                <archive>
+                                    <compress>${rapids.compressed.artifact}</compress>
+                                </archive>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>default-test-jar</id>
+                            <phase>${rapids.shim.jar.test.phase}</phase>
+                            <goals>
+                                <goal>test-jar</goal>
+                            </goals>
+                            <configuration>
+                                <classifier>${spark.version.classifier}tests</classifier>
+                                <skipIfEmpty>true</skipIfEmpty>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>${maven.install.plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>ch.epfl.scala</groupId>
+                <artifactId>bloop-maven-plugin</artifactId>
+                <version>2.0.0</version>
+                <executions>
+                    <execution>
+                        <id>default-cli</id>
+                        <configuration>
+                            <skip>true</skip>
+                            <!-- workaround: skip is not skipping -->
+                            <bloopConfigDir>/dev/null/ERROR: Do not specify the bloop-maven-plugin on the command line. Instead invoke `mvn install -DbloopInstall ...`</bloopConfigDir>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <message>Minimum Maven version 3.6.x required</message>
+                                    <version>[3.6,)</version>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <message>Only Java 8, 11, and 17 are supported!</message>
+                                    <version>[1.8,1.9),[11,12),[17,18)</version>
+                                </requireJavaVersion>
+                                <!-- #if scala-2.13 --><!--
+                        <requireProperty>
+                            <regexMessage>Unexpected buildver value ${buildver} for a Scala 2.13 build, only Apache Spark versions 3.3.0 (330) and higher are supported, no vendor builds such as 330db</regexMessage>
+                            <property>buildver</property>
+                            <regex>[3-9][3-9][0-9]</regex>
+                        </requireProperty>
+                        --><!-- #endif scala-2.13 -->
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.rat</groupId>
+                <artifactId>apache-rat-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*.md</exclude>
+                        <exclude>**/*.iml</exclude>
+                        <exclude>NOTICE-binary</exclude>
+                        <exclude>docs/dev/idea-code-style-settings.xml</exclude>
+                        <exclude>pom.xml.asc</exclude>
+                        <exclude>jenkins/databricks/*.patch</exclude>
+                        <exclude>*.jar</exclude>
+                        <exclude>docs/demo/**/*.ipynb</exclude>
+                        <exclude>docs/demo/**/*.zpln</exclude>
+                        <exclude>**/src/main/resources/META-INF/services/*</exclude>
+                        <exclude>**/src/test/resources/**</exclude>
+                        <exclude>rmm_log.txt</exclude>
+                        <exclude>dependency-reduced-pom*.xml</exclude>
+                        <exclude>**/.*/**</exclude>
+                        <exclude>**/src/main/java/com/nvidia/spark/rapids/format/*</exclude>
+                        <exclude>**/*.csv</exclude>
+                        <exclude>dist/*.txt</exclude>
+                        <exclude>**/META-INF/com.nvidia.spark.rapids.SparkShimServiceProvider</exclude>
+                        <!-- Apache Rat excludes target folder for projects that are included by
+                        default, but there are some projects that are conditionally included.  -->
+                        <exclude>**/target/**/*</exclude>
+                        <exclude>**/cufile.log</exclude>
+                        <exclude>thirdparty/parquet-testing/**</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <!--use this plugin to configure "spark.rapids.project.basedir" property-->
+            <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+                <version>0.1</version>
+                <executions>
+                    <execution>
+                        <id>directories</id>
+                        <goals>
+                            <goal>highest-basedir</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <property>spark.rapids.project.basedir</property>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <append>true</append>
+                            <excludes>
+                                <exclude>${rapids.shade.package}.*</exclude>
+                            </excludes>
+                            <includes>
+                                <include>ai.rapids.cudf.*</include>
+                                <include>com.nvidia.spark.*</include>
+                                <include>org.apache.spark.sql.rapids.*</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+                <plugin>
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>scala-maven-plugin</artifactId>
+                </plugin>
+                <plugin>
+                    <groupId>org.scalatest</groupId>
+                    <artifactId>scalatest-maven-plugin</artifactId>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.rat</groupId>
+                    <artifactId>apache-rat-plugin</artifactId>
+                </plugin>
+        </plugins>
+    </build>
+
+
+    <dependencies>
+
+    <dependency>
+        <groupId>org.scala-lang</groupId>
+        <artifactId>scala-library</artifactId>
+        <version>${scala.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.scalatest</groupId>
+        <artifactId>scalatest_${scala.binary.version}</artifactId>
+        <version>3.2.16</version>
+        <scope>test</scope>
+    </dependency>
+
+    </dependencies>
+
+</project>
